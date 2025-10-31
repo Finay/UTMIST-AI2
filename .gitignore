@@ -33,3 +33,5 @@ env/
 ai2/
 # Local scratch
 path/
+torchviz
+torchviz.png

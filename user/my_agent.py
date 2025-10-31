@@ -18,12 +18,48 @@ import os
 import gdown
 from typing import Optional
 from environment.agent import Agent
-from stable_baselines3 import PPO, A2C # Sample RL Algo imports
-from sb3_contrib import RecurrentPPO # Importing an LSTM
+from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
+from stable_baselines3 import PPO
+import torch
+from torch.nn import functional as F
 
 # To run the sample TTNN model, you can uncomment the 2 lines below: 
 # import ttnn
 # from user.my_agent_tt import TTMLPPolicy
+
+
+def _process_obs(obs):
+    offset = 32
+    return torch.cat((
+        obs[:8],
+        F.one_hot(obs[8].to(torch.int64), num_classes=13),
+        obs[9:13],
+        F.one_hot(obs[14].to(torch.int64), num_classes=13),
+        F.one_hot(obs[15].to(torch.int64), num_classes=3),
+        obs[offset:offset+8],
+        F.one_hot(obs[offset+8].to(torch.int64), num_classes=13),
+        obs[offset+9:offset+13],
+        F.one_hot(obs[offset+14].to(torch.int64), num_classes=13),
+        F.one_hot(obs[offset+15].to(torch.int64), num_classes=3),
+        obs[28:32]
+    ))
+
+
+class CustomExtractor(BaseFeaturesExtractor):
+    def __init__(self, observation_space, hidden_dim: int = 128, hidden_layers: int = 4):
+        super(CustomExtractor, self).__init__(observation_space, 86)
+
+    def forward(self, obs: torch.Tensor) -> torch.Tensor:
+        obs_processed = torch.stack([_process_obs(obs[i, :]) for i in range(obs.shape[0])]).to(torch.float32)
+        return obs_processed
+
+    @classmethod
+    def get_policy_kwargs(cls, hidden_dim: int = 64, hidden_layers: int = 3) -> dict:
+        return dict(
+            features_extractor_class=cls,
+            features_extractor_kwargs=dict(hidden_layers=hidden_layers, hidden_dim=hidden_dim),
+            net_arch=[hidden_dim]*hidden_layers
+        )
 
 
 class SubmittedAgent(Agent):
@@ -42,7 +78,14 @@ class SubmittedAgent(Agent):
 
     def _initialize(self) -> None:
         if self.file_path is None:
-            self.model = PPO("MlpPolicy", self.env, verbose=0)
+            self.model = PPO(
+                "MlpPolicy",
+                self.env,
+                policy_kwargs=CustomExtractor.get_policy_kwargs(),
+                n_steps=30 * 90 * 5,
+                batch_size=30 * 5,
+                ent_coef=0.01,
+            )
             del self.env
         else:
             self.model = PPO.load(self.file_path)
@@ -60,18 +103,10 @@ class SubmittedAgent(Agent):
         if not os.path.isfile(data_path):
             print(f"Downloading {data_path}...")
             # Place a link to your PUBLIC model data here. This is where we will download it from on the tournament server.
-            url = "https://drive.google.com/file/d/1JIokiBOrOClh8piclbMlpEEs6mj3H1HJ/view?usp=sharing"
+            url = "https://drive.google.com/file/d/1U2ZehCJBrmcTvaiu5eoEWUPxwaczthf_/view?usp=sharing"
             gdown.download(url, output=data_path, fuzzy=True)
         return data_path
 
     def predict(self, obs):
         action, _ = self.model.predict(obs)
         return action
-
-    def save(self, file_path: str) -> None:
-        self.model.save(file_path)
-
-    # If modifying the number of models (or training in general), modify this
-    def learn(self, env, total_timesteps, log_interval: int = 4):
-        self.model.set_env(env)
-        self.model.learn(total_timesteps=total_timesteps, log_interval=log_interval)
