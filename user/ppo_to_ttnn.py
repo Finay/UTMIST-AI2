@@ -159,15 +159,13 @@ def test_mlp_policy():
     tt_mod_agent.model.policy.action_net = tt_an
 
     features = _process_obs(x.squeeze()).unsqueeze(0)
-    with ttnn.tracer.trace():
-        l = tt_an(tt_mep(features))
-        true_tt_y = torch.clip(l, torch.zeros_like(l), torch.ones_like(l))
+    l = tt_an(tt_mep(features))
+    true_tt_y = torch.clip(l, torch.zeros_like(l), torch.ones_like(l))
 
     # Run forward pass
     y = torch.from_numpy(my_agent.predict(x))
     tt_y = torch.from_numpy(tt_mod_agent.predict(x))
 
-    # Check that the Pearson Correlation Coefficient is above 0.99 (meaning that these 2 tensors are very very close to eachother) to check for correctness
     if check_pcc(y, tt_y):
         print("✅ PCC check passed!")
     else:
@@ -182,7 +180,6 @@ def test_mlp_policy():
         print(true_tt_y)
         print(y)
 
-    ttnn.tracer.visualize(true_tt_y, file_name="net_trace.svg")
 
 if __name__ == "__main__":
     test_mlp_policy()

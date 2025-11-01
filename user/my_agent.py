@@ -22,6 +22,7 @@ from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from stable_baselines3 import PPO
 import torch
 from torch.nn import functional as F
+from user.ppo_autobringup import TTPolicy
 
 # To run the sample TTNN model, you can uncomment the 2 lines below: 
 # import ttnn
@@ -90,6 +91,7 @@ class SubmittedAgent(Agent):
             self.model = PPO.load(self.file_path, custom_objects={
                 'policy_kwargs': CustomExtractor.get_policy_kwargs(),
             })
+        self.tt_policy = TTPolicy(self.model)
 
         # To run the sample TTNN model during inference, you can uncomment the 5 lines below:
         # This assumes that your self.model.policy has the MLPPolicy architecture defined in `train_agent.py` or `my_agent_tt.py`
@@ -109,5 +111,5 @@ class SubmittedAgent(Agent):
         return data_path
 
     def predict(self, obs):
-        action, _ = self.model.predict(obs, deterministic=True)
+        action, _ = self.tt_policy.predict(obs, run_pcc_validation=True)
         return action

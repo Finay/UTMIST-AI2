@@ -1,3 +1,7 @@
+import os
+import sys
+sys.path.insert(1, os.getcwd())
+
 from environment.environment import RenderMode, CameraResolution
 from environment.agent import run_match
 from user.train_agent import UserInputAgent, BasedAgent, ConstantAgent, ClockworkAgent, SB3Agent, RecurrentPPOAgent #add anymore custom Agents (from train_agent.py) here as needed
