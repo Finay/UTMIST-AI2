@@ -9,18 +9,28 @@ from user.my_agent import SubmittedAgent
 import pygame
 pygame.init()
 
-my_agent = UserInputAgent()
+my_agent = SubmittedAgent()
 
 #NOTE: Input your file path here in SubmittedAgent if you are loading a model:
-opponent = SubmittedAgent()
+opponent = BasedAgent()
 
-match_time = 99999
+match_time = 90
 
 # Run a single real-time match
-run_match(
+result = run_match(
     agent_1=my_agent,
     agent_2=opponent,
     max_timesteps=30 * match_time,  # Match time in frames (adjust as needed)
     resolution=CameraResolution.LOW,
-    video_path='tt_agent.mp4' #NOTE: you can change the save path of the video here
+    # video_path='tt_agent.mp4' #NOTE: you can change the save path of the video here
 )
+if result.player1_result == 1:
+    run_match(
+        agent_1=my_agent,
+        agent_2=opponent,
+        max_timesteps=30 * match_time,  # Match time in frames (adjust as needed)
+        resolution=CameraResolution.LOW,
+        video_path='tt_agent.mp4' #NOTE: you can change the save path of the video here
+    )
+else:
+    print("Player lost test match")

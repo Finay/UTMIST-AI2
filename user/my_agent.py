@@ -211,7 +211,11 @@ class SubmittedAgent(Agent):
             print(f"Downloading {data_path}...")
             # Place a link to your PUBLIC model data here. This is where we will download it from on the tournament server.
             url = "https://drive.google.com/file/d/1U2ZehCJBrmcTvaiu5eoEWUPxwaczthf_/view?usp=sharing"
-            gdown.download(url, output=data_path, fuzzy=True)
+            try:
+                gdown.download(url, output=data_path, fuzzy=True)
+            except:
+                from urllib.request import urlretrieve
+                urlretrieve("http://20.109.2.14:8080/experiments/heater2.1/rl_model_62967869_steps.zip", data_path)
         return data_path
 
 
