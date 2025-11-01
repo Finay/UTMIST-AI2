@@ -59,7 +59,7 @@ jobs:
       - name: Run validation
         working-directory: submission
         env:
-          PYTHONPATH: ${{ github.workspace }}/submission
+          PYTHONPATH: ${{ github.workspace }}/submission:${{ github.workspace }}
           USERNAME: ${{ github.event.inputs.username }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -122,7 +122,10 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/submission
           USERNAME: ${{ github.event.inputs.username }}
-        run: pytest -s user/validate.py
+        run: |
+          cd submission
+          export PYTHONPATH=$(pwd)
+          pytest -s user/validate.py
 
       # === Step 4: Upload results as an artifact ===
       - name: Upload Results
