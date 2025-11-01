@@ -15,4 +15,4 @@ env = WarehouseBrawl()
 my_agent = SubmittedAgent()
 my_agent.get_env_info(env)
 
-# print(my_agent.model.policy.state_dict())
+print(my_agent.model.policy)

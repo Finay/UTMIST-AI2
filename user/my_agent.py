@@ -87,7 +87,10 @@ class SubmittedAgent(Agent):
             )
             del self.env
         else:
-            self.model = PPO.load(self.file_path)
+            self.model = PPO.load(self.file_path, custom_objects={
+                'policy_kwargs': {'features_extractor_class': CustomExtractor,
+                                  'net_arch': [64]*3},
+            })
 
         # To run the sample TTNN model during inference, you can uncomment the 5 lines below:
         # This assumes that your self.model.policy has the MLPPolicy architecture defined in `train_agent.py` or `my_agent_tt.py`
