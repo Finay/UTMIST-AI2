@@ -5,7 +5,7 @@ loguru
 gym==0.25.2
 gymnasium==1.0.0
 matplotlib
-numpy==2.1.1
+numpy
 openai==1.61.1
 opencv-python==4.11.0.86
 pytest
@@ -25,6 +25,3 @@ torch==2.4.1
 tqdm==4.67.1
 transformers==4.48.2
 supabase
-tt-smi @ git+https://github.com/tenstorrent/tt-smi.git@2f4d5e8086ec7169a34041261067b68e2b439c52
-tt-tools-common==1.4.31
--e git+https://github.com/tenstorrent/tt-metal.git@5143b856ebeecd8562933b8c744b78f313203efe#egg=ttnn

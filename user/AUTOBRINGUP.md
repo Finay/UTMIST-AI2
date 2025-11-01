@@ -3,10 +3,9 @@
 I made a simple way to bring up your PPO policy to Tenstorrent.
 
 ## Installation
-1. Add a copy of [this file](https://github.com/Finay/UTMIST-AI2/blob/main/user/ppo_autobringup.py) to your `user` directory.
-2. Import `TTPolicy` from user.ppo_autobringup with `from user.ppo_autobringup import TTPolicy`
-3. Initialize `TTPolicy` with your loaded PPO model within `SubmittedAgent`'s `_initialize` function with `self.tt_policy = TTPolicy(self.model)` (This must come after `self.model = PPO.load(...)`)
-4. Replace `predict` calls to the PPO model with calls to the TTPolicy.
+1. Add a copy of the contents of [this file](https://github.com/Finay/UTMIST-AI2/blob/main/user/ppo_autobringup.py) to your `my_agent` file.
+2. Initialize `TTPolicy` with your loaded PPO model within `SubmittedAgent`'s `_initialize` function with `self.tt_policy = TTPolicy(self.model)` (This must come after `self.model = PPO.load(...)`)
+3. Replace `predict` calls to the PPO model with calls to the TTPolicy.
 ```python3
 # Previously:
 def predict(self, obs):
