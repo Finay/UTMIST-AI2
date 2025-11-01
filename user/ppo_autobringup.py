@@ -37,11 +37,6 @@ def check_pcc(tensor1: torch.Tensor, tensor2: torch.Tensor, threshold: float = 0
     # Check if it exceeds threshold
     return pcc.item() >= threshold
 
-# Feature Extractor
-#   Check if model.policy.pi_features_extractor has model attr
-# MLP Extractor Policy
-#   
-# Action Net
 
 class TTPolicyNet(nn.Module):
     def __init__(self, policy_net):
