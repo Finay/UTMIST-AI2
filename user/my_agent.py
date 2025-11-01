@@ -22,6 +22,7 @@ from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from stable_baselines3 import PPO
 import torch
 from torch.nn import functional as F
+from user.ppo_autobringup import TTPolicy
 
 # To run the sample TTNN model, you can uncomment the 2 lines below: 
 # import ttnn
@@ -46,7 +47,7 @@ def _process_obs(obs):
 
 
 class CustomExtractor(BaseFeaturesExtractor):
-    def __init__(self, observation_space, hidden_dim: int = 128, hidden_layers: int = 4):
+    def __init__(self, observation_space):
         super(CustomExtractor, self).__init__(observation_space, 86)
 
     def forward(self, obs: torch.Tensor) -> torch.Tensor:
@@ -57,7 +58,6 @@ class CustomExtractor(BaseFeaturesExtractor):
     def get_policy_kwargs(cls, hidden_dim: int = 64, hidden_layers: int = 3) -> dict:
         return dict(
             features_extractor_class=cls,
-            features_extractor_kwargs=dict(hidden_layers=hidden_layers, hidden_dim=hidden_dim),
             net_arch=[hidden_dim]*hidden_layers
         )
 
@@ -88,7 +88,10 @@ class SubmittedAgent(Agent):
             )
             del self.env
         else:
-            self.model = PPO.load(self.file_path)
+            self.model = PPO.load(self.file_path, custom_objects={
+                'policy_kwargs': CustomExtractor.get_policy_kwargs(),
+            })
+        self.tt_policy = TTPolicy(self.model)
 
         # To run the sample TTNN model during inference, you can uncomment the 5 lines below:
         # This assumes that your self.model.policy has the MLPPolicy architecture defined in `train_agent.py` or `my_agent_tt.py`
@@ -108,5 +111,5 @@ class SubmittedAgent(Agent):
         return data_path
 
     def predict(self, obs):
-        action, _ = self.model.predict(obs)
+        action, _ = self.tt_policy.predict(obs, run_pcc_validation=True)
         return action
