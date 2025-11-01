@@ -23,6 +23,8 @@ from stable_baselines3 import PPO
 import torch
 from torch.nn import functional as F
 
+import ttnn
+import torch.nn as nn
 mesh_device = ttnn.open_mesh_device(ttnn.MeshShape(1,1))
 
 def check_pcc(tensor1: torch.Tensor, tensor2: torch.Tensor, threshold: float = 0.99) -> bool:
