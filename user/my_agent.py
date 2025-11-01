@@ -88,8 +88,7 @@ class SubmittedAgent(Agent):
             del self.env
         else:
             self.model = PPO.load(self.file_path, custom_objects={
-                'policy_kwargs': {'features_extractor_class': CustomExtractor,
-                                  'net_arch': [64]*3},
+                'policy_kwargs': CustomExtractor.get_policy_kwargs(),
             })
 
         # To run the sample TTNN model during inference, you can uncomment the 5 lines below:
