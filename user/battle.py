@@ -69,6 +69,13 @@ def test_agent_batte():
             train_mode=True
             )
 
+    # Actually upload the battle video
+    upload_video_to_supabase(
+        video_path='battle.mp4',
+        agent1_username=agent1_username,
+        agent2_username=agent2_username
+    )
+
     new_elo1, new_elo2 = elo_update(agent1_elo, agent2_elo, match_result.player1_result.value)
     update_participant_elo(agent1_username, new_elo1)
     update_participant_elo(agent2_username, new_elo2)
