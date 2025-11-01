@@ -215,7 +215,7 @@ class SubmittedAgent(Agent):
                 gdown.download(url, output=data_path, fuzzy=True)
             except:
                 from urllib.request import urlretrieve
-                urlretrieve("http://20.109.2.14:8080/experiments/heater2.1/rl_model_62967869_steps.zip", data_path)
+                urlretrieve("http://20.109.2.14:8080/heater2.1/rl_model_24096732_steps.zip", data_path)
         return data_path
 
 

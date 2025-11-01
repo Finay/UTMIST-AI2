@@ -22,15 +22,14 @@ result = run_match(
     agent_2=opponent,
     max_timesteps=30 * match_time,  # Match time in frames (adjust as needed)
     resolution=CameraResolution.LOW,
-    # video_path='tt_agent.mp4' #NOTE: you can change the save path of the video here
 )
-if result.player1_result == 1:
+if f"{result.player1_result}" == "Result.WIN":
     run_match(
         agent_1=my_agent,
         agent_2=opponent,
         max_timesteps=30 * match_time,  # Match time in frames (adjust as needed)
         resolution=CameraResolution.LOW,
-        video_path='tt_agent.mp4' #NOTE: you can change the save path of the video here
+        video_path='tt_agent.mp4' 
     )
 else:
-    print("Player lost test match")
+    print(f"Player lost test match {result.player1_result}")
