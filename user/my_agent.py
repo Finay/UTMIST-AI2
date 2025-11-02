@@ -140,8 +140,8 @@ try:
 
             return processed_action.numpy(), None
 
-    def predict(self, obs, run_pcc_validation=False):
-        return self.forward(obs, run_pcc_validation=run_pcc_validation)
+        def predict(self, obs, run_pcc_validation=False):
+            return self.forward(obs, run_pcc_validation=run_pcc_validation)
 
 except:
     has_ttnn = False
@@ -226,11 +226,9 @@ class SubmittedAgent(Agent):
 
     def predict(self, obs):
         if has_ttnn:
-            action, _ = self.tt_policy.predict(obs)
+            action, _ = self.tt_policy.predict(obs, run_pcc_validation=True)
         else:
             action, _ = self.model.predict(obs)
         if abs(abs(obs[0]) - 5) < 0.001 and abs(obs[0] - obs[32]) > 0.5:
             action = np.clip(action, np.array([0]*10), np.array([0,0,0,0,1,0,0,0,0,1]))
-        if obs[15] != 0:
-            action = np.clip(action, np.array([0]*10), np.array([1,1,1,1,1,0,1,1,1,1]))
         return action
